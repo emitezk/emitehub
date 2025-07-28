@@ -1,37 +1,32 @@
--- EMITE HUB v5.3.0 - Blox Fruits STABLE PATCH
+-- EMITE HUB - Blox Fruits v5.3.1
 -- Desenvolvido por: PikaFlowz
 
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
+if not game:IsLoaded() then game.Loaded:Wait() end
 
--- Serviços
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local CoreGui = game:GetService("CoreGui")
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
-
 local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
--- Anti AFK
+-- Anti-AFK
 LocalPlayer.Idled:Connect(function()
-    VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
-    VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
+    VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame or CFrame.new())
+    task.wait(1)
+    VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame or CFrame.new())
 end)
 
 -- GUI
 pcall(function()
-    if CoreGui:FindFirstChild("EmiteHubUI") then
-        CoreGui.EmiteHubUI:Destroy()
-    end
+    if CoreGui:FindFirstChild("EmiteHubUI") then CoreGui.EmiteHubUI:Destroy() end
 end)
 
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
-MainGui.ResetOnSpawn = false
 MainGui.Parent = CoreGui
+MainGui.ResetOnSpawn = false
 MainGui.Enabled = false
 
 local MainFrame = Instance.new("Frame")
@@ -49,13 +44,12 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "EMITE HUB - BLOX FRUITS v5.3.0"
+Title.Text = "EMITE HUB - BLOX FRUITS v5.3.1"
 Title.Font = Enum.Font.GothamBlack
 Title.TextScaled = true
 Title.TextColor3 = Color3.fromRGB(255, 80, 80)
 Title.Parent = MainFrame
 
--- Botão flutuante
 local OpenButton = Instance.new("ImageButton")
 OpenButton.Name = "EmiteHubOpen"
 OpenButton.Image = "rbxassetid://15725685720"
@@ -69,7 +63,7 @@ OpenButton.MouseButton1Click:Connect(function()
     MainGui.Enabled = not MainGui.Enabled
 end)
 
--- Configurações padrão
+-- Configs
 _G.EmiteSettings = {
     AutoClick = true,
     FastAutoClick = true,
@@ -78,33 +72,35 @@ _G.EmiteSettings = {
     ESP = true
 }
 
--- AutoClick comum (simulado localmente)
+-- Auto Click
 spawn(function()
     while task.wait(0.15) do
-        if _G.EmiteSettings.AutoClick and UserInputService then
+        if _G.EmiteSettings.AutoClick then
             pcall(function()
-                VirtualUser:Button1Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
-                task.wait(0.05)
-                VirtualUser:Button1Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
+                local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                if tool and tool:FindFirstChild("RemoteFunction") then
+                    tool.RemoteFunction:InvokeServer("Click")
+                end
             end)
         end
     end
 end)
 
--- FastAutoClick + AutoFarm combo (seguro)
+-- Fast Auto Click
 spawn(function()
     while task.wait(0.05) do
         if _G.EmiteSettings.FastAutoClick then
             pcall(function()
-                VirtualUser:Button1Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
-                task.wait()
-                VirtualUser:Button1Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
+                local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                if tool and tool:FindFirstChild("RemoteFunction") then
+                    tool.RemoteFunction:InvokeServer("Click")
+                end
             end)
         end
     end
 end)
 
--- Auto Buso ativado com checagem
+-- Auto Buso
 spawn(function()
     while task.wait(2) do
         if _G.EmiteSettings.AutoBuso then
@@ -121,16 +117,16 @@ spawn(function()
     end
 end)
 
--- ESP seguro para todos inimigos válidos
+-- ESP
 local function EnableESP()
     for _, v in ipairs(Workspace:GetDescendants()) do
-        if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-            if not v.HumanoidRootPart:FindFirstChild("SelectionBox") then
+        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+            if not v.HumanoidRootPart:FindFirstChild("EmiteESP") then
                 local box = Instance.new("SelectionBox")
+                box.Name = "EmiteESP"
                 box.Adornee = v.HumanoidRootPart
                 box.LineThickness = 0.05
                 box.Color3 = Color3.fromRGB(255, 0, 0)
-                box.Name = "EmiteESP"
                 box.Parent = v.HumanoidRootPart
             end
         end
@@ -145,9 +141,5 @@ spawn(function()
     end
 end)
 
--- Logs
-print("[EMITE HUB] Interface carregada com sucesso.")
-for k, v in pairs(_G.EmiteSettings) do
-    print("[EMITE HUB] " .. tostring(k) .. ": " .. tostring(v))
-end
-print("[EMITE HUB] Desenvolvido por PikaFlowz - Seja bem-vindo, @" .. LocalPlayer.Name)
+print("[EMITE HUB - BLOX FRUITS] Carregado com sucesso!")
+print("[EMITE HUB] Olá, @" .. LocalPlayer.Name)
