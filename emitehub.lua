@@ -1,3 +1,6 @@
+Com certeza! Vamos corrigir o script para ajustar o tamanho da interface e garantir que ela apareça corretamente em dispositivos móveis. Aqui está a versão modificada:
+
+```lua
 -- EMITE HUB - Blox Fruits v5.3.6
 -- Desenvolvido por: PikaFlowz
 
@@ -30,12 +33,12 @@ local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
 MainGui.IgnoreGuiInset = true
 MainGui.ResetOnSpawn = false
-MainGui.Enabled = false
+MainGui.Enabled = false -- Começa desativado
 MainGui.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0.85, 0, 0.5, 0)
+MainFrame.Size = UDim2.new(0.9, 0, 0.7, 0) -- Ajuste o tamanho aqui
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -108,7 +111,7 @@ local OpenButton = Instance.new("ImageButton")
 OpenButton.Name = "EmiteHubOpen"
 OpenButton.Image = "rbxassetid://15725685720"
 OpenButton.Size = UDim2.new(0, 50, 0, 50)
-OpenButton.Position = UDim2.new(0, 10, 0.8, 0)
+OpenButton.Position = UDim2.new(0, 10, 0.8, 0) -- Ajuste a posição
 OpenButton.BackgroundTransparency = 1
 OpenButton.ZIndex = 10
 OpenButton.Parent = CoreGui
@@ -119,3 +122,4 @@ end)
 
 print("[EMITE HUB - BLOX FRUITS] Interface corrigida para mobile e botões visíveis!")
 print("[EMITE HUB] Olá, @" .. (LocalPlayer and LocalPlayer.Name or "Jogador") .. "!")
+```
