@@ -1,5 +1,5 @@
--- EMITE HUB v5.2.2 - Blox Fruits PATCHED FULL VERSION
--- Criado por: PikaFlowz
+-- EMITE HUB v5.3.0 - Blox Fruits STABLE PATCH
+-- Desenvolvido por: PikaFlowz
 
 if not game:IsLoaded() then
     game.Loaded:Wait()
@@ -13,14 +13,21 @@ local CoreGui = game:GetService("CoreGui")
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
 
-local LocalPlayer = Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
 -- Anti AFK
 LocalPlayer.Idled:Connect(function()
     VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
+    VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
 end)
 
 -- GUI
+pcall(function()
+    if CoreGui:FindFirstChild("EmiteHubUI") then
+        CoreGui.EmiteHubUI:Destroy()
+    end
+end)
+
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
 MainGui.ResetOnSpawn = false
@@ -42,7 +49,7 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "EMITE HUB - BLOX FRUITS v5.2.2"
+Title.Text = "EMITE HUB - BLOX FRUITS v5.3.0"
 Title.Font = Enum.Font.GothamBlack
 Title.TextScaled = true
 Title.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -71,59 +78,65 @@ _G.EmiteSettings = {
     ESP = true
 }
 
--- AutoClick comum
+-- AutoClick comum (simulado localmente)
 spawn(function()
     while task.wait(0.15) do
-        if _G.EmiteSettings.AutoClick then
+        if _G.EmiteSettings.AutoClick and UserInputService then
             pcall(function()
-                mouse1click()
+                VirtualUser:Button1Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
+                task.wait(0.05)
+                VirtualUser:Button1Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
             end)
         end
     end
 end)
 
--- FastAutoClick + AutoFarm combo
+-- FastAutoClick + AutoFarm combo (seguro)
 spawn(function()
     while task.wait(0.05) do
         if _G.EmiteSettings.FastAutoClick then
             pcall(function()
-                mouse1press()
+                VirtualUser:Button1Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
                 task.wait()
-                mouse1release()
+                VirtualUser:Button1Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
             end)
         end
     end
 end)
 
--- Auto Buso
+-- Auto Buso ativado com checagem
 spawn(function()
     while task.wait(2) do
         if _G.EmiteSettings.AutoBuso then
             pcall(function()
-                if not LocalPlayer.Character:FindFirstChild("HasBuso") then
-                    ReplicatedStorage.Remotes:WaitForChild("Buso"):FireServer()
+                local char = LocalPlayer.Character
+                if char and not char:FindFirstChild("HasBuso") then
+                    local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+                    if remotes and remotes:FindFirstChild("Buso") then
+                        remotes.Buso:FireServer()
+                    end
                 end
             end)
         end
     end
 end)
 
--- ESP
+-- ESP seguro para todos inimigos válidos
 local function EnableESP()
     for _, v in ipairs(Workspace:GetDescendants()) do
-        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+        if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
             if not v.HumanoidRootPart:FindFirstChild("SelectionBox") then
                 local box = Instance.new("SelectionBox")
                 box.Adornee = v.HumanoidRootPart
                 box.LineThickness = 0.05
                 box.Color3 = Color3.fromRGB(255, 0, 0)
+                box.Name = "EmiteESP"
                 box.Parent = v.HumanoidRootPart
             end
         end
     end
 end
 
--- Loop ESP
 spawn(function()
     while task.wait(2) do
         if _G.EmiteSettings.ESP then
@@ -133,8 +146,8 @@ spawn(function()
 end)
 
 -- Logs
-print("[EMITE HUB] Interface carregada e funcional.")
+print("[EMITE HUB] Interface carregada com sucesso.")
 for k, v in pairs(_G.EmiteSettings) do
-    print("[EMITE HUB] " .. k .. ": ", v)
+    print("[EMITE HUB] " .. tostring(k) .. ": " .. tostring(v))
 end
 print("[EMITE HUB] Desenvolvido por PikaFlowz - Seja bem-vindo, @" .. LocalPlayer.Name)
