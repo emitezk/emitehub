@@ -1,4 +1,4 @@
--- EMITE HUB - Blox Fruits v5.3.3
+-- EMITE HUB - Blox Fruits v5.3.4
 -- Desenvolvido por: PikaFlowz
 
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -29,7 +29,7 @@ end)
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
 MainGui.IgnoreGuiInset = true
-MainGui.Parent = (syn and CoreGui) or (gethui and gethui()) or Players.LocalPlayer:WaitForChild("PlayerGui")
+MainGui.Parent = CoreGui
 MainGui.ResetOnSpawn = false
 MainGui.Enabled = true
 
@@ -48,7 +48,7 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "EMITE HUB - BLOX FRUITS v5.3.3"
+Title.Text = "EMITE HUB - BLOX FRUITS v5.3.4"
 Title.Font = Enum.Font.GothamBlack
 Title.TextScaled = true
 Title.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -80,17 +80,20 @@ _G.EmiteSettings = {
 spawn(function()
     while task.wait(0.15) do
         if _G.EmiteSettings.AutoClick then
-            local success, err = pcall(function()
+            pcall(function()
                 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 local tool = char and char:FindFirstChildOfClass("Tool")
                 if tool then
-                    local remote = tool:FindFirstChildWhichIsA("RemoteFunction") or tool:FindFirstChild("RemoteEvent")
-                    if remote then
-                        remote:InvokeServer("Click")
+                    local clickEvent = tool:FindFirstChildWhichIsA("RemoteFunction") or tool:FindFirstChildWhichIsA("RemoteEvent")
+                    if clickEvent then
+                        if clickEvent:IsA("RemoteFunction") then
+                            clickEvent:InvokeServer("Click")
+                        elseif clickEvent:IsA("RemoteEvent") then
+                            clickEvent:FireServer("Click")
+                        end
                     end
                 end
             end)
-            if not success then warn("AutoClick erro:", err) end
         end
     end
 end)
@@ -99,17 +102,20 @@ end)
 spawn(function()
     while task.wait(0.05) do
         if _G.EmiteSettings.FastAutoClick then
-            local success, err = pcall(function()
+            pcall(function()
                 local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
                 local tool = char and char:FindFirstChildOfClass("Tool")
                 if tool then
-                    local remote = tool:FindFirstChildWhichIsA("RemoteFunction") or tool:FindFirstChild("RemoteEvent")
-                    if remote then
-                        remote:InvokeServer("Click")
+                    local clickEvent = tool:FindFirstChildWhichIsA("RemoteFunction") or tool:FindFirstChildWhichIsA("RemoteEvent")
+                    if clickEvent then
+                        if clickEvent:IsA("RemoteFunction") then
+                            clickEvent:InvokeServer("Click")
+                        elseif clickEvent:IsA("RemoteEvent") then
+                            clickEvent:FireServer("Click")
+                        end
                     end
                 end
             end)
-            if not success then warn("FastAutoClick erro:", err) end
         end
     end
 end)
