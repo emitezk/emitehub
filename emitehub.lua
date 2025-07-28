@@ -1,4 +1,4 @@
--- EMITE HUB - Blox Fruits v5.3.1
+-- EMITE HUB - Blox Fruits v5.3.2
 -- Desenvolvido por: PikaFlowz
 
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -9,13 +9,16 @@ local Workspace = game:GetService("Workspace")
 local CoreGui = game:GetService("CoreGui")
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
 local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
 -- Anti-AFK
 LocalPlayer.Idled:Connect(function()
-    VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame or CFrame.new())
-    task.wait(1)
-    VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame or CFrame.new())
+    if Workspace.CurrentCamera then
+        VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
+    end
 end)
 
 -- GUI
@@ -25,9 +28,9 @@ end)
 
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
-MainGui.Parent = CoreGui
+MainGui.Parent = (syn and CoreGui) or (gethui and gethui()) or Players.LocalPlayer:WaitForChild("PlayerGui")
 MainGui.ResetOnSpawn = false
-MainGui.Enabled = false
+MainGui.Enabled = true -- Forçar visibilidade inicial
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 600, 0, 400)
@@ -44,7 +47,7 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "EMITE HUB - BLOX FRUITS v5.3.1"
+Title.Text = "EMITE HUB - BLOX FRUITS v5.3.2"
 Title.Font = Enum.Font.GothamBlack
 Title.TextScaled = true
 Title.TextColor3 = Color3.fromRGB(255, 80, 80)
@@ -57,7 +60,7 @@ OpenButton.Size = UDim2.new(0, 60, 0, 60)
 OpenButton.Position = UDim2.new(0, 20, 0.5, -30)
 OpenButton.BackgroundTransparency = 1
 OpenButton.ZIndex = 10
-OpenButton.Parent = CoreGui
+OpenButton.Parent = MainGui
 
 OpenButton.MouseButton1Click:Connect(function()
     MainGui.Enabled = not MainGui.Enabled
@@ -141,5 +144,5 @@ spawn(function()
     end
 end)
 
-print("[EMITE HUB - BLOX FRUITS] Carregado com sucesso!")
+print("[EMITE HUB - BLOX FRUITS] Interface carregada com sucesso!")
 print("[EMITE HUB] Olá, @" .. LocalPlayer.Name)
