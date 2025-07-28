@@ -1,7 +1,4 @@
-Com certeza! Aqui está a versão corrigida do script, com as melhorias e verificações adicionais que discutimos:
-
-```lua
--- EMITE HUB - Blox Fruits v5.3.3
+-- EMITE HUB - Blox Fruits v5.3.6
 -- Desenvolvido por: PikaFlowz
 
 if not game:IsLoaded() then game.Loaded:Wait() end
@@ -21,8 +18,6 @@ LocalPlayer.Idled:Connect(function()
         VirtualUser:Button2Down(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
         task.wait(1)
         VirtualUser:Button2Up(Vector2.new(0, 0), Workspace.CurrentCamera.CFrame)
-    else
-        warn("Câmera não encontrada para Anti-AFK!")
     end
 end)
 
@@ -34,13 +29,15 @@ end)
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "EmiteHubUI"
 MainGui.IgnoreGuiInset = true
-MainGui.Parent = (syn and CoreGui) or (gethui and gethui()) or Players.LocalPlayer:WaitForChild("PlayerGui")
 MainGui.ResetOnSpawn = false
-MainGui.Enabled = true
+MainGui.Enabled = false
+MainGui.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 600, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0.85, 0, 0.5, 0)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BackgroundTransparency = 0.1
 MainFrame.BorderSizePixel = 0
@@ -53,24 +50,44 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundTransparency = 1
-Title.Text = "EMITE HUB - BLOX FRUITS v5.3.3"
+Title.Text = "EMITE HUB - BLOX FRUITS v5.3.6"
 Title.Font = Enum.Font.GothamBlack
 Title.TextScaled = true
 Title.TextColor3 = Color3.fromRGB(255, 80, 80)
 Title.Parent = MainFrame
 
-local OpenButton = Instance.new("ImageButton")
-OpenButton.Name = "EmiteHubOpen"
-OpenButton.Image = "rbxassetid://15725685720"
-OpenButton.Size = UDim2.new(0, 60, 0, 60)
-OpenButton.Position = UDim2.new(0, 20, 0.5, -30)
-OpenButton.BackgroundTransparency = 1
-OpenButton.ZIndex = 10
-OpenButton.Parent = MainGui
+local ButtonContainer = Instance.new("ScrollingFrame")
+ButtonContainer.Size = UDim2.new(1, -20, 1, -50)
+ButtonContainer.Position = UDim2.new(0, 10, 0, 45)
+ButtonContainer.BackgroundTransparency = 1
+ButtonContainer.CanvasSize = UDim2.new(0, 0, 2, 0)
+ButtonContainer.ScrollBarThickness = 4
+ButtonContainer.Parent = MainFrame
 
-OpenButton.MouseButton1Click:Connect(function()
-    MainGui.Enabled = not MainGui.Enabled
-end)
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Padding = UDim.new(0, 6)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = ButtonContainer
+
+local function createToggle(name, default, callback)
+    local toggle = Instance.new("TextButton")
+    toggle.Size = UDim2.new(1, 0, 0, 40)
+    toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    toggle.TextColor3 = Color3.new(1, 1, 1)
+    toggle.Font = Enum.Font.GothamBold
+    toggle.TextSize = 18
+    toggle.Text = name .. ": " .. (default and "ON" or "OFF")
+    toggle.Parent = ButtonContainer
+
+    local state = default
+    toggle.MouseButton1Click:Connect(function()
+        state = not state
+        toggle.Text = name .. ": " .. (state and "ON" or "OFF")
+        callback(state)
+    end)
+
+    callback(state)
+end
 
 -- Configs
 _G.EmiteSettings = {
@@ -81,101 +98,24 @@ _G.EmiteSettings = {
     ESP = true
 }
 
--- Funções de apoio com verificações
-local function FindToolAndRemote(char)
-    if not char then
-        warn("Personagem não encontrado!")
-        return nil, nil
-    end
+createToggle("Auto Click", true, function(v) _G.EmiteSettings.AutoClick = v end)
+createToggle("Fast Auto Click", true, function(v) _G.EmiteSettings.FastAutoClick = v end)
+createToggle("Auto Buso", true, function(v) _G.EmiteSettings.AutoBuso = v end)
+createToggle("ESP", true, function(v) _G.EmiteSettings.ESP = v end)
 
-    local tool = char:FindFirstChildOfClass("Tool")
-    if not tool then
-        warn("Ferramenta não encontrada!")
-        return nil, nil
-    end
+-- Botão flutuante "E"
+local OpenButton = Instance.new("ImageButton")
+OpenButton.Name = "EmiteHubOpen"
+OpenButton.Image = "rbxassetid://15725685720"
+OpenButton.Size = UDim2.new(0, 50, 0, 50)
+OpenButton.Position = UDim2.new(0, 10, 0.8, 0)
+OpenButton.BackgroundTransparency = 1
+OpenButton.ZIndex = 10
+OpenButton.Parent = CoreGui
 
-    local remote = tool:FindFirstChildWhichIsA("RemoteFunction") or tool:FindFirstChild("RemoteEvent")
-    if not remote then
-        warn("Remote não encontrado!")
-        return nil, nil
-    end
-
-    return tool, remote
-end
-
--- Auto Click
-spawn(function()
-    while task.wait(0.15) do
-        if _G.EmiteSettings.AutoClick then
-            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-            local tool, remote = FindToolAndRemote(char)
-            if tool and remote then
-                local success, err = pcall(function()
-                    remote:InvokeServer("Click")
-                end)
-                if not success then warn("Erro no AutoClick:", err) end
-            end
-        end
-    end
+OpenButton.MouseButton1Click:Connect(function()
+    MainGui.Enabled = not MainGui.Enabled
 end)
 
--- Fast Auto Click
-spawn(function()
-    while task.wait(0.05) do
-        if _G.EmiteSettings.FastAutoClick then
-            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-            local tool, remote = FindToolAndRemote(char)
-            if tool and remote then
-                local success, err = pcall(function()
-                    remote:InvokeServer("Click")
-                end)
-                if not success then warn("Erro no FastAutoClick:", err) end
-            end
-        end
-    end
-end)
-
--- Auto Buso
-spawn(function()
-    while task.wait(2) do
-        if _G.EmiteSettings.AutoBuso then
-            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-            if char and not char:FindFirstChild("HasBuso") then
-                local remotes = ReplicatedStorage:FindFirstChild("Remotes")
-                if remotes and remotes:FindFirstChild("Buso") then
-                    remotes.Buso:FireServer()
-                else
-                    warn("Remotes.Buso não encontrado!")
-                end
-            end
-        end
-    end
-end)
-
--- ESP
-local function EnableESP()
-    for _, v in ipairs(Workspace:GetDescendants()) do
-        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-            if not v.HumanoidRootPart:FindFirstChild("EmiteESP") then
-                local box = Instance.new("SelectionBox")
-                box.Name = "EmiteESP"
-                box.Adornee = v.HumanoidRootPart
-                box.LineThickness = 0.05
-                box.Color3 = Color3.fromRGB(255, 0, 0)
-                box.Parent = v.HumanoidRootPart
-            end
-        end
-    end
-end
-
-spawn(function()
-    while task.wait(2) do
-        if _G.EmiteSettings.ESP then
-            pcall(EnableESP)
-        end
-    end
-end)
-
-print("[EMITE HUB - BLOX FRUITS] Interface carregada com sucesso!")
+print("[EMITE HUB - BLOX FRUITS] Interface corrigida para mobile e botões visíveis!")
 print("[EMITE HUB] Olá, @" .. (LocalPlayer and LocalPlayer.Name or "Jogador") .. "!")
-
