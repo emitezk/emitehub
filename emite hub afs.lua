@@ -1,5 +1,5 @@
---// Emite Hub - Yuto Styled //--
--- Criado por: PikaFlowz
+-- Emite Hub – Yuto Styled
+-- Criado por: PikaFlowz | Estilo 100% baseado no Yuto Hub V2
 
 if game.CoreGui:FindFirstChild("EmiteHub") then
     game.CoreGui.EmiteHub:Destroy()
@@ -9,93 +9,149 @@ local EmiteHub = Instance.new("ScreenGui", game:GetService("CoreGui"))
 EmiteHub.Name = "EmiteHub"
 EmiteHub.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Main GUI
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LP = Players.LocalPlayer
+
+-- Botão flutuante "E"
+local FloatBtn = Instance.new("TextButton", EmiteHub)
+FloatBtn.Size = UDim2.new(0, 40, 0, 40)
+FloatBtn.Position = UDim2.new(0, 10, 1, -50)
+FloatBtn.Text = "E"
+FloatBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+FloatBtn.TextColor3 = Color3.new(1, 1, 1)
+FloatBtn.Font = Enum.Font.GothamBlack
+FloatBtn.TextSize = 20
+FloatBtn.Name = "FloatButton"
+FloatBtn.Active = true
+FloatBtn.Draggable = true
+Instance.new("UICorner", FloatBtn).CornerRadius = UDim.new(1, 0)
+
+-- Janela principal
 local Main = Instance.new("Frame", EmiteHub)
-Main.Size = UDim2.new(0, 550, 0, 360)
-Main.Position = UDim2.new(0.5, -275, 0.5, -180)
-Main.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-Main.Active = true
-Main.Draggable = true
+Main.Size = UDim2.new(0, 600, 0, 370)
+Main.Position = UDim2.new(0.5, -300, 0.5, -185)
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Main.Visible = false
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
 -- Título
 local Title = Instance.new("TextLabel", Main)
-Title.Size = UDim2.new(1, 0, 0, 40)
 Title.Text = "🌀 Emite Hub | Yuto Styled"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.TextColor3 = Color3.new(1, 1, 1)
 Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 
--- Sidebar
+-- Menu lateral
 local Sidebar = Instance.new("Frame", Main)
+Sidebar.Size = UDim2.new(0, 130, 1, -40)
 Sidebar.Position = UDim2.new(0, 0, 0, 40)
-Sidebar.Size = UDim2.new(0, 120, 1, -40)
-Sidebar.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+Sidebar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 8)
-
-local Tabs = {"Farm", "Auto", "Stars", "Player", "Misc"}
-local Pages = {}
 
 -- Conteúdo principal
 local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 130, 0, 50)
-Content.Size = UDim2.new(1, -140, 1, -60)
-Content.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
+Content.Position = UDim2.new(0, 140, 0, 50)
+Content.Size = UDim2.new(1, -150, 1, -60)
+Content.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Instance.new("UICorner", Content).CornerRadius = UDim.new(0, 8)
 
--- Criar páginas e botões
+-- Tabs e Páginas
+local Tabs = {"Farm", "Auto", "Stars", "Player", "Misc"}
+local Pages = {}
+
 for i, name in ipairs(Tabs) do
-    local TabBtn = Instance.new("TextButton", Sidebar)
-    TabBtn.Size = UDim2.new(1, -10, 0, 30)
-    TabBtn.Position = UDim2.new(0, 5, 0, (i - 1) * 35 + 5)
-    TabBtn.Text = name
-    TabBtn.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-    TabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TabBtn.Font = Enum.Font.Gotham
-    TabBtn.TextSize = 14
-    Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 6)
+    local Btn = Instance.new("TextButton", Sidebar)
+    Btn.Text = name
+    Btn.Size = UDim2.new(1, -20, 0, 30)
+    Btn.Position = UDim2.new(0, 10, 0, (i - 1) * 35 + 10)
+    Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Btn.TextColor3 = Color3.new(1, 1, 1)
+    Btn.Font = Enum.Font.Gotham
+    Btn.TextSize = 14
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
 
     local Page = Instance.new("Frame", Content)
     Page.Name = name
+    Page.Visible = (i == 1)
     Page.Size = UDim2.new(1, 0, 1, 0)
     Page.BackgroundTransparency = 1
-    Page.Visible = (i == 1)
     Pages[name] = Page
 
-    TabBtn.MouseButton1Click:Connect(function()
+    Btn.MouseButton1Click:Connect(function()
         for _, p in pairs(Pages) do p.Visible = false end
         Page.Visible = true
     end)
 end
 
--- [FARM PAGE]
-Instance.new("TextLabel", Pages["Farm"]):SetAttributes({
-    Text = "Auto Farm e Quest Ativados",
-    Size = UDim2.new(0, 300, 0, 20),
-    Position = UDim2.new(0, 10, 0, 10),
-    BackgroundTransparency = 1,
-    TextColor3 = Color3.fromRGB(255, 255, 255),
-    TextSize = 14,
-    Font = Enum.Font.Gotham
-})
+-- Alternar visibilidade com FloatBtn
+FloatBtn.MouseButton1Click:Connect(function()
+    Main.Visible = not Main.Visible
+end)
 
--- Funcionalidades padrão ativadas
-local AutoFarm, AutoQuest, AutoUltimate = true, true, true
-local AutoSkill, AutoClick = true, true
-local AutoOpenStar, AutoEquipBest, AutoFuse = true, true, true
-local EnemyESP, AutoTPToEnemy, FPSBoost = true, true, true
+-- Função para criar toggles
+local function CreateToggle(parent, name, default, posY, callback)
+    local Btn = Instance.new("TextButton", parent)
+    Btn.Size = UDim2.new(0, 220, 0, 30)
+    Btn.Position = UDim2.new(0, 10, 0, posY)
+    Btn.Text = name .. ": " .. (default and "ON" or "OFF")
+    Btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Btn.TextColor3 = Color3.new(1, 1, 1)
+    Btn.Font = Enum.Font.Gotham
+    Btn.TextSize = 14
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
 
--- Funções Ativas
+    local state = default
+    Btn.MouseButton1Click:Connect(function()
+        state = not state
+        Btn.Text = name .. ": " .. (state and "ON" or "OFF")
+        callback(state)
+    end)
+    callback(state)
+end
+
+-- Toggles em Farm
+local y = 10
+CreateToggle(Pages["Farm"], "Auto Farm", true, y, function(v)
+    getgenv().AutoFarm = v
+end)
+y += 35
+CreateToggle(Pages["Farm"], "Auto Quest", true, y, function(v)
+    getgenv().AutoQuest = v
+end)
+y += 35
+CreateToggle(Pages["Farm"], "Auto TP", true, y, function(v)
+    getgenv().AutoTP = v
+end)
+y += 35
+CreateToggle(Pages["Farm"], "Auto Click", true, y, function(v)
+    getgenv().AutoClick = v
+end)
+y += 35
+CreateToggle(Pages["Farm"], "Auto Skill", true, y, function(v)
+    getgenv().AutoSkill = v
+end)
+y += 35
+CreateToggle(Pages["Farm"], "Auto Ultimate", true, y, function(v)
+    getgenv().AutoUltimate = v
+end)
+
+-- Execuções reais (loop)
 task.spawn(function()
     while task.wait(0.3) do
         if AutoFarm then
-            local e = workspace:FindFirstChild("Enemies")
-            for _, mob in pairs(e:GetChildren()) do
-                if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Health") and mob.Health.Value > 0 then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
-                    game:GetService("ReplicatedStorage").RemoteEvent:FireServer("Attack", mob)
-                    break
+            local enemies = workspace:FindFirstChild("Enemies")
+            if enemies then
+                for _, mob in pairs(enemies:GetChildren()) do
+                    if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Health") and mob.Health.Value > 0 then
+                        LP.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
+                        ReplicatedStorage.RemoteEvent:FireServer("Attack", mob)
+                        break
+                    end
                 end
             end
         end
@@ -103,24 +159,10 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while task.wait(3) do
-        if AutoQuest then
-            local npcFolder = workspace:FindFirstChild("NPCs")
-            for _, npc in pairs(npcFolder:GetChildren()) do
-                if npc:FindFirstChild("Head") then
-                    fireproximityprompt(npc.Head:FindFirstChildOfClass("ProximityPrompt"))
-                    break
-                end
-            end
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(5) do
-        if AutoUltimate then
+    while task.wait(0.1) do
+        if AutoClick then
             pcall(function()
-                game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("UseUltimate")
+                ReplicatedStorage.RemoteEvent:FireServer("Click")
             end)
         end
     end
@@ -130,130 +172,76 @@ task.spawn(function()
     while task.wait(1.5) do
         if AutoSkill then
             pcall(function()
-                game:GetService("ReplicatedStorage").RemoteEvent:FireServer("UseSkill")
+                ReplicatedStorage.RemoteEvent:FireServer("UseSkill")
             end)
         end
     end
 end)
 
 task.spawn(function()
-    while task.wait(0.1) do
-        if AutoClick then
+    while task.wait(4) do
+        if AutoUltimate then
             pcall(function()
-                game:GetService("ReplicatedStorage").RemoteEvent:FireServer("Click")
+                ReplicatedStorage.RemoteFunction:InvokeServer("UseUltimate")
             end)
         end
     end
 end)
-
-local function getCurrentStar()
-    local map = workspace:FindFirstChild("Map")
-    if map and map:FindFirstChild("Stars") then
-        for _, s in pairs(map.Stars:GetChildren()) do
-            if s:IsA("Model") and s:FindFirstChildOfClass("ProximityPrompt") then
-                return s.Name
-            end
-        end
-    end
-    return nil
-end
 
 task.spawn(function()
     while task.wait(2) do
-        if AutoOpenStar then
-            local star = getCurrentStar()
-            if star then
-                game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("OpenStar", star, false)
-            end
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(10) do
-        if AutoEquipBest then
-            game:GetService("ReplicatedStorage").RemoteEvent:FireServer("EquipBest")
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(15) do
-        if AutoFuse then
-            local inv = game.Players.LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("FighterInventory")
-            if inv then
-                local toFuse = {}
-                for _, f in pairs(inv:GetChildren()) do
-                    if f:IsA("TextLabel") and not string.find(f.Name, "Mythic") then
-                        table.insert(toFuse, f.Name)
+        if AutoQuest then
+            local npcs = workspace:FindFirstChild("NPCs")
+            if npcs then
+                for _, npc in pairs(npcs:GetChildren()) do
+                    if npc:FindFirstChild("Head") and npc.Head:FindFirstChildOfClass("ProximityPrompt") then
+                        pcall(function()
+                            fireproximityprompt(npc.Head:FindFirstChildOfClass("ProximityPrompt"))
+                        end)
+                        break
                     end
                 end
-                if #toFuse > 1 then
-                    game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("FuseFighters", toFuse)
-                end
             end
         end
     end
 end)
 
 task.spawn(function()
-    while task.wait(1) do
-        if EnemyESP then
-            local e = workspace:FindFirstChild("Enemies")
-            for _, mob in pairs(e:GetChildren()) do
-                if mob:IsA("Model") and not mob:FindFirstChild("YutoESP") and mob:FindFirstChild("HumanoidRootPart") then
-                    local esp = Instance.new("BoxHandleAdornment", mob)
-                    esp.Name = "YutoESP"
-                    esp.Size = Vector3.new(4, 5, 4)
-                    esp.Adornee = mob.HumanoidRootPart
-                    esp.AlwaysOnTop = true
-                    esp.ZIndex = 5
-                    esp.Transparency = 0.5
-                    esp.Color3 = Color3.fromRGB(255, 0, 0)
+    while task.wait(0.2) do
+        if AutoTP then
+            local enemies = workspace:FindFirstChild("Enemies")
+            if enemies then
+                for _, mob in pairs(enemies:GetChildren()) do
+                    if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Health") and mob.Health.Value > 0 then
+                        LP.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
+                        break
+                    end
                 end
             end
         end
     end
 end)
 
-if FPSBoost then
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("Texture") or v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Decal") then
-            v:Destroy()
-        end
-    end
-    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-    pcall(function() setfpscap(60) end)
-end
+-- Botão resgatar códigos
+local RedeemBtn = Instance.new("TextButton", Pages["Misc"])
+RedeemBtn.Size = UDim2.new(0, 220, 0, 35)
+RedeemBtn.Position = UDim2.new(0, 10, 0, 10)
+RedeemBtn.Text = "🎁 Resgatar Códigos Ativos"
+RedeemBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+RedeemBtn.TextColor3 = Color3.new(1, 1, 1)
+RedeemBtn.Font = Enum.Font.GothamBold
+RedeemBtn.TextSize = 14
+Instance.new("UICorner", RedeemBtn).CornerRadius = UDim.new(0, 6)
 
--- [MISC PAGE] - Resgatar Códigos
-local Codes = {
-    "SORRYFORSHUTDOWN", "AURAUPDATE", "PRISMATIC2", "CLOUDPASSIVE",
-    "HYPERAURA", "SUMMER2025", "JULYHYPE", "WORLDCODE", "FREEBOOSTS"
-}
-
-local function RedeemAllCodes()
+RedeemBtn.MouseButton1Click:Connect(function()
+    local Codes = {"UpdatePrismatic2", "PrismPower", "SORRYFORBUG", "RELEASEHYPE", "CursedUpdate"}
     for _, code in pairs(Codes) do
         pcall(function()
-            local result = game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer("RedeemCode", code)
-            print("Código:", code, "->", result and "Resgatado!" or "Inválido ou usado")
+            ReplicatedStorage.RemoteFunction:InvokeServer("Codes", code)
         end)
-        wait(0.3)
+        task.wait(0.3)
     end
-end
-
-local btnRedeem = Instance.new("TextButton", Pages["Misc"])
-btnRedeem.Size = UDim2.new(0, 200, 0, 30)
-btnRedeem.Position = UDim2.new(0, 10, 0, 10)
-btnRedeem.Text = "🎁 Resgatar Códigos Ativos"
-btnRedeem.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-btnRedeem.TextColor3 = Color3.fromRGB(255, 255, 255)
-btnRedeem.Font = Enum.Font.Gotham
-btnRedeem.TextSize = 14
-Instance.new("UICorner", btnRedeem).CornerRadius = UDim.new(0, 6)
-
-btnRedeem.MouseButton1Click:Connect(function()
-    btnRedeem.Text = "Resgatando..."
-    RedeemAllCodes()
-    btnRedeem.Text = "🎁 Resgatar Códigos Ativos"
+    RedeemBtn.Text = "🎁 Códigos resgatados!"
+    task.wait(1.5)
+    RedeemBtn.Text = "🎁 Resgatar Códigos Ativos"
 end)
