@@ -1,5 +1,6 @@
--- Emite Hub – Yuto Styled
--- Criado por: PikaFlowz | Estilo 100% baseado no Yuto Hub V2
+-- Emite Hub – Yuto Styled (100% inspirado no Yuto Hub V2)
+-- Desenvolvido por: PikaFlowz
+-- GitHub Ready | Interface idêntica | Funções reais | UI flutuante
 
 if game.CoreGui:FindFirstChild("EmiteHub") then
     game.CoreGui.EmiteHub:Destroy()
@@ -39,7 +40,7 @@ Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
 -- Título
 local Title = Instance.new("TextLabel", Main)
-Title.Text = "🌀 Emite Hub | Yuto Styled"
+Title.Text = "🌐 Emite Hub | Yuto Styled"
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.BackgroundTransparency = 1
@@ -93,62 +94,47 @@ FloatBtn.MouseButton1Click:Connect(function()
     Main.Visible = not Main.Visible
 end)
 
--- Função para criar toggles
-local function CreateToggle(parent, name, default, posY, callback)
+-- Função para criar toggles reais
+local function CreateToggle(parent, label, posY, default, callback)
     local Btn = Instance.new("TextButton", parent)
+    Btn.Text = label .. ": OFF"
     Btn.Size = UDim2.new(0, 220, 0, 30)
     Btn.Position = UDim2.new(0, 10, 0, posY)
-    Btn.Text = name .. ": " .. (default and "ON" or "OFF")
-    Btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     Btn.TextColor3 = Color3.new(1, 1, 1)
     Btn.Font = Enum.Font.Gotham
     Btn.TextSize = 14
     Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
 
-    local state = default
+    local state = default or false
+    Btn.Text = label .. ": " .. (state and "ON" or "OFF")
+
     Btn.MouseButton1Click:Connect(function()
         state = not state
-        Btn.Text = name .. ": " .. (state and "ON" or "OFF")
+        Btn.Text = label .. ": " .. (state and "ON" or "OFF")
         callback(state)
     end)
+
     callback(state)
 end
 
--- Toggles em Farm
+-- Farm toggles
 local y = 10
-CreateToggle(Pages["Farm"], "Auto Farm", true, y, function(v)
-    getgenv().AutoFarm = v
-end)
-y += 35
-CreateToggle(Pages["Farm"], "Auto Quest", true, y, function(v)
-    getgenv().AutoQuest = v
-end)
-y += 35
-CreateToggle(Pages["Farm"], "Auto TP", true, y, function(v)
-    getgenv().AutoTP = v
-end)
-y += 35
-CreateToggle(Pages["Farm"], "Auto Click", true, y, function(v)
-    getgenv().AutoClick = v
-end)
-y += 35
-CreateToggle(Pages["Farm"], "Auto Skill", true, y, function(v)
-    getgenv().AutoSkill = v
-end)
-y += 35
-CreateToggle(Pages["Farm"], "Auto Ultimate", true, y, function(v)
-    getgenv().AutoUltimate = v
-end)
+CreateToggle(Pages.Farm, "Auto Farm", y, false, function(v) getgenv().AutoFarm = v end) y += 35
+CreateToggle(Pages.Farm, "Auto Click", y, false, function(v) getgenv().AutoClick = v end) y += 35
+CreateToggle(Pages.Farm, "Auto Skill", y, false, function(v) getgenv().AutoSkill = v end) y += 35
+CreateToggle(Pages.Farm, "Auto Ultimate", y, false, function(v) getgenv().AutoUltimate = v end) y += 35
+CreateToggle(Pages.Farm, "Auto Quest", y, false, function(v) getgenv().AutoQuest = v end) y += 35
 
--- Execuções reais (loop)
+-- Funções backend (loop)
 task.spawn(function()
     while task.wait(0.3) do
-        if AutoFarm then
+        if getgenv().AutoFarm then
             local enemies = workspace:FindFirstChild("Enemies")
             if enemies then
                 for _, mob in pairs(enemies:GetChildren()) do
                     if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Health") and mob.Health.Value > 0 then
-                        LP.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
+                        LP.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
                         ReplicatedStorage.RemoteEvent:FireServer("Attack", mob)
                         break
                     end
@@ -158,9 +144,10 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
+-- Auto Click
+spawn(function()
     while task.wait(0.1) do
-        if AutoClick then
+        if getgenv().AutoClick then
             pcall(function()
                 ReplicatedStorage.RemoteEvent:FireServer("Click")
             end)
@@ -168,9 +155,10 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
+-- Auto Skill
+spawn(function()
     while task.wait(1.5) do
-        if AutoSkill then
+        if getgenv().AutoSkill then
             pcall(function()
                 ReplicatedStorage.RemoteEvent:FireServer("UseSkill")
             end)
@@ -178,9 +166,10 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
+-- Auto Ultimate
+spawn(function()
     while task.wait(4) do
-        if AutoUltimate then
+        if getgenv().AutoUltimate then
             pcall(function()
                 ReplicatedStorage.RemoteFunction:InvokeServer("UseUltimate")
             end)
@@ -188,16 +177,15 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
+-- Auto Quest
+spawn(function()
     while task.wait(2) do
-        if AutoQuest then
+        if getgenv().AutoQuest then
             local npcs = workspace:FindFirstChild("NPCs")
             if npcs then
                 for _, npc in pairs(npcs:GetChildren()) do
                     if npc:FindFirstChild("Head") and npc.Head:FindFirstChildOfClass("ProximityPrompt") then
-                        pcall(function()
-                            fireproximityprompt(npc.Head:FindFirstChildOfClass("ProximityPrompt"))
-                        end)
+                        fireproximityprompt(npc.Head:FindFirstChildOfClass("ProximityPrompt"))
                         break
                     end
                 end
@@ -206,27 +194,11 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while task.wait(0.2) do
-        if AutoTP then
-            local enemies = workspace:FindFirstChild("Enemies")
-            if enemies then
-                for _, mob in pairs(enemies:GetChildren()) do
-                    if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Health") and mob.Health.Value > 0 then
-                        LP.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame + Vector3.new(0, 4, 0)
-                        break
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- Botão resgatar códigos
-local RedeemBtn = Instance.new("TextButton", Pages["Misc"])
+-- Botão para resgatar códigos ativos
+local RedeemBtn = Instance.new("TextButton", Pages.Misc)
+RedeemBtn.Text = "🎁 Resgatar Códigos Ativos"
 RedeemBtn.Size = UDim2.new(0, 220, 0, 35)
 RedeemBtn.Position = UDim2.new(0, 10, 0, 10)
-RedeemBtn.Text = "🎁 Resgatar Códigos Ativos"
 RedeemBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 RedeemBtn.TextColor3 = Color3.new(1, 1, 1)
 RedeemBtn.Font = Enum.Font.GothamBold
@@ -234,14 +206,16 @@ RedeemBtn.TextSize = 14
 Instance.new("UICorner", RedeemBtn).CornerRadius = UDim.new(0, 6)
 
 RedeemBtn.MouseButton1Click:Connect(function()
-    local Codes = {"UpdatePrismatic2", "PrismPower", "SORRYFORBUG", "RELEASEHYPE", "CursedUpdate"}
+    local Codes = {"SORRYFORBUG", "PrismPower", "UpdatePrismatic2", "RELEASEHYPE"}
     for _, code in pairs(Codes) do
         pcall(function()
             ReplicatedStorage.RemoteFunction:InvokeServer("Codes", code)
         end)
         task.wait(0.3)
     end
-    RedeemBtn.Text = "🎁 Códigos resgatados!"
+    RedeemBtn.Text = "🎁 Códigos Resgatados!"
     task.wait(1.5)
     RedeemBtn.Text = "🎁 Resgatar Códigos Ativos"
 end)
+
+-- FIM DO SCRIPT - Emite Hub Yuto Styled ✅
